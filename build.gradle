@@ -1,0 +1,36 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name "android-m2"
+            url "file://$System.env.ANDROID_HOME/extras/android/m2repository"
+        }
+        maven {
+            name "google-m2"
+            url "file://$System.env.ANDROID_HOME/extras/google/m2repository"
+        }
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.+'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            name "android-m2"
+            url "file://$System.env.ANDROID_HOME/extras/android/m2repository"
+        }
+        maven {
+            name "google-m2"
+            url "file://$System.env.ANDROID_HOME/extras/google/m2repository"
+        }
+    }
+}
