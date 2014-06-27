@@ -14,6 +14,10 @@ public class MainActivity  extends InsetActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onReadyForContent() {
         setContentView(R.layout.activity_main);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -21,13 +25,9 @@ public class MainActivity  extends InsetActivity {
             public void onLayoutInflated(WatchViewStub stub) {
                 mTextView = (TextView) stub.findViewById(R.id.text);
                 Log.d(TAG, "TextView: " + mTextView.getText() + " view=" + mTextView);
+                mTextView.setText("Ready!");
             }
         });
-    }
-
-    @Override
-    public void onReadyForContent() {
         Log.d(TAG, "Watch ready for content!");
-        mTextView.setText("Ready!");
     }
 }
