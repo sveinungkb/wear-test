@@ -29,12 +29,30 @@ public class MobileMainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionListener).addApi(Wearable.API).build();
-        apiClient.connect();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ensureConnected();
+    }
+
+    private void ensureConnected() {
+        if (apiClient != null && apiClient.isConnected()) {
+            updateCount();
+        }
+        else {
+            apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionListener).addApi(Wearable.API).build();
+            apiClient.connect();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sendCount(-1);
+        handler.removeCallbacksAndMessages(handler);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,7 +78,7 @@ public class MobileMainActivity extends Activity {
             Log.d(TAG, "Connected, start sharing data.");
             count = 0;
 
-            sendCount();
+            updateCount();
         }
 
         @Override
@@ -75,19 +93,23 @@ public class MobileMainActivity extends Activity {
 
     private final Handler handler = new Handler();
 
-    private void sendCount() {
+    private void updateCount() {
+        sendCount(count++);
+        handler.postAtTime(new Runnable() {
+            @Override
+            public void run() {
+                updateCount();
+            }
+        }, handler, SystemClock.uptimeMillis() + 1000);
+    }
+
+    private void sendCount(final int count) {
         PutDataMapRequest dataMap = PutDataMapRequest.create(Data.PATH_COUNT);
-        dataMap.getDataMap().putInt(Data.KEY_COUNT, count++);
+        dataMap.getDataMap().putInt(Data.KEY_COUNT, count);
         PutDataRequest request = dataMap.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi
                 .putDataItem(apiClient, request);
         Log.d(TAG, "Updating count to: " + count);
-        handler.postAtTime(new Runnable() {
-            @Override
-            public void run() {
-                sendCount();
-            }
-        }, handler, SystemClock.uptimeMillis() + 1000);
     }
 
     private final GoogleApiClient.OnConnectionFailedListener onConnectionListener = new GoogleApiClient.OnConnectionFailedListener() {

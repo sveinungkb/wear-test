@@ -71,6 +71,7 @@ public class WatchMainActivity extends InsetActivity {
             for (DataEvent event : dataEvents) {
                 if (event.getType() == DataEvent.TYPE_DELETED) {
                     Log.d(TAG, "DataItem deleted: " + event.getDataItem().getUri());
+                    handler.post(onNewCount(-1));
                 } else if (event.getType() == DataEvent.TYPE_CHANGED) {
                     Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
                     if (event.getDataItem().getUri().getPath().endsWith(Data.PATH_COUNT)) {
@@ -88,7 +89,12 @@ public class WatchMainActivity extends InsetActivity {
             @Override
             public void run() {
                 if (mTextView != null) {
-                    mTextView.setText("Count is: "+ Integer.toString(count));
+                    if (count < 0) {
+                        mTextView.setText("Stopped!");
+                    }
+                    else {
+                        mTextView.setText("Count is: " + Integer.toString(count));
+                    }
                 }
             }
         };
