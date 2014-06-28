@@ -19,7 +19,7 @@ android {
     }
     sourceSets {
         main {
-            java.srcDirs = ['src/main/java', 'src/shared/java']
+            java.srcDirs = ['src/main/java', '../shared/src/java']
         }
     }
 }

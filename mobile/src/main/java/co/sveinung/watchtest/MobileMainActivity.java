@@ -1,7 +1,6 @@
 package co.sveinung.watchtest;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -19,10 +18,10 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 
-public class MainActivity extends Activity {
+public class MobileMainActivity extends Activity {
 
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MobileMainActivity.class.getSimpleName();
     private GoogleApiClient apiClient;
     private int count;
 
@@ -82,6 +81,7 @@ public class MainActivity extends Activity {
         PutDataRequest request = dataMap.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi
                 .putDataItem(apiClient, request);
+        Log.d(TAG, "Updating count to: " + count);
         handler.postAtTime(new Runnable() {
             @Override
             public void run() {
