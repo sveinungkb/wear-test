@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
 
 
         apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionListener).addApi(Wearable.API).build();
+        apiClient.connect();
     }
 
 
