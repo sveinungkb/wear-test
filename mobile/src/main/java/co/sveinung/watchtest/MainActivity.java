@@ -33,11 +33,6 @@ public class MainActivity extends Activity {
 
 
         apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionListener).addApi(Wearable.API).build();
-
-
-        Intent notificationIntent = new Intent(this, NotificationActivity.class);
-        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 
@@ -75,14 +70,14 @@ public class MainActivity extends Activity {
     };
 
     private void cancelSend() {
-        handler.removeCallbacksAndMessages(Shared.COUNT_KEY);
+        handler.removeCallbacksAndMessages(handler);
     }
 
     private final Handler handler = new Handler();
 
     private void sendCount() {
-        PutDataMapRequest dataMap = PutDataMapRequest.create("/count");
-        dataMap.getDataMap().putInt(Shared.COUNT_KEY, count++);
+        PutDataMapRequest dataMap = PutDataMapRequest.create(Data.PATH_COUNT);
+        dataMap.getDataMap().putInt(Data.KEY_COUNT, count++);
         PutDataRequest request = dataMap.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi
                 .putDataItem(apiClient, request);
@@ -91,7 +86,7 @@ public class MainActivity extends Activity {
             public void run() {
                 sendCount();
             }
-        }, Shared.COUNT_KEY, SystemClock.uptimeMillis() + 1000);
+        }, handler, SystemClock.uptimeMillis() + 1000);
     }
 
     private final GoogleApiClient.OnConnectionFailedListener onConnectionListener = new GoogleApiClient.OnConnectionFailedListener() {
