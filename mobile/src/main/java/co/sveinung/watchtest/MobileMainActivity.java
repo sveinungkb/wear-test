@@ -107,8 +107,8 @@ public class MobileMainActivity extends Activity {
         PutDataMapRequest dataMap = PutDataMapRequest.create(Data.PATH_COUNT);
         dataMap.getDataMap().putInt(Data.KEY_COUNT, count);
         PutDataRequest request = dataMap.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi
-                .putDataItem(apiClient, request);
+        DataApi.DataItemResult result = Wearable.DataApi
+                .putDataItem(apiClient, request).await();
         Log.d(TAG, "Updating count to: " + count);
     }
 

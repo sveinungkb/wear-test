@@ -6,6 +6,6 @@ public class Data {
     public static final String PATH_COUNT = "/count";
     public static final String PATH_META = "/meta";
     public static final String KEY_COUNT = "count";
-    public static final String KEY_META_TEXT = "/meta/text";
-    public static final String KEY_META_IMAGE = "/meta/image";
+    public static final String KEY_META_TEXT = "text";
+    public static final String KEY_META_ASSET = "image";
 }

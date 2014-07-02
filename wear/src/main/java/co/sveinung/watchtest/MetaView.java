@@ -18,7 +18,12 @@ public class MetaView {
     }
 
     public void setMeta(final String text, final Bitmap image) {
-        textView.setText(text);
-        imageView.setImageBitmap(image);
+        textView.post(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText(text);
+                imageView.setImageBitmap(image);
+            }
+        });
     }
 }

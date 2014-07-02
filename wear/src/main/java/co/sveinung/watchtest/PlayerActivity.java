@@ -3,6 +3,7 @@ package co.sveinung.watchtest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.wearable.activity.InsetActivity;
 import android.support.wearable.view.DismissOverlayView;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -37,6 +39,7 @@ public class PlayerActivity extends InsetActivity {
     private GoogleApiClient apiClient;
     private Button actionButton;
     private boolean nowPlaying;
+    private Handler handler = new Handler();
 
     @Override
     public void onReadyForContent() {
@@ -50,7 +53,7 @@ public class PlayerActivity extends InsetActivity {
                 dismissOverlayView.show();
             }
         });
-        metaView = new MetaView(findViewById(R.id.player_meta));
+        metaView = new MetaView(findViewById(R.id.player_root));
         actionButton = (Button) findViewById(R.id.player_action);
         actionButton.setOnClickListener(onActionClickedListener);
 
@@ -93,10 +96,10 @@ public class PlayerActivity extends InsetActivity {
                 if (Data.PATH_META.equals(event.getDataItem().getUri().getPath())) {
                     DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
                     final String text = dataMapItem.getDataMap().getString(Data.KEY_META_TEXT);
-                    byte[] byteArray = dataMapItem.getDataMap().getByteArray(Data.KEY_META_IMAGE);
+                    Asset asset = dataMapItem.getDataMap().getAsset(Data.KEY_META_ASSET);
                     Bitmap albumArt = null;
-                    if (byteArray != null && byteArray.length > 0) {
-                        albumArt = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                    if (asset != null) {
+                        albumArt = BitmapFactory.decodeStream(Wearable.DataApi.getFdForAsset(apiClient, asset).await().getInputStream());
                     }
                     metaView.setMeta(text, albumArt);
                 }
