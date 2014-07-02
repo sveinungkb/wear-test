@@ -2,6 +2,7 @@ package co.sveinung.watchtest;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.wearable.activity.InsetActivity;
@@ -131,18 +132,11 @@ public class PlayerActivity extends InsetActivity {
     private final View.OnClickListener onActionClickedListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            broadcastMessage(Message.PATH_CONTROL, nowPlaying ? Message.CONTROL_STOP : Message.CONTROL_PLAY);
+            WearUtils.broadCastMessageAsync(apiClient, Message.PATH_CONTROL, nowPlaying ? Message.CONTROL_STOP : Message.CONTROL_PLAY);
         }
     };
 
-    private void broadcastMessage(final String action, final byte payload) {
-        PendingResult<NodeApi.GetConnectedNodesResult> connectedNodes = Wearable.NodeApi.getConnectedNodes(apiClient);
-        List<Node> nodes = connectedNodes.await().getNodes();
-        for (Node node : nodes) {
-            Log.d(TAG, "Sending message to: " + node);
-            Wearable.MessageApi.sendMessage(apiClient, node.getId(), action, new byte[]{payload});
-        }
-    }
+
 
 
 }

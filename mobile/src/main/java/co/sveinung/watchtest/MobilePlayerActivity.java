@@ -17,12 +17,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
@@ -41,12 +44,14 @@ public class MobilePlayerActivity extends Activity {
     private static final int REQUEST_PICK_PICTURE = 1;
     private GoogleApiClient apiClient;
     private ImageView image;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         image = (ImageView) findViewById(R.id.player_image);
+        textView = (TextView) findViewById(R.id.player_text);
         Button changeImageButton = (Button) findViewById(R.id.player_button);
         changeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,6 +107,7 @@ public class MobilePlayerActivity extends Activity {
         @Override
         public void onConnected(Bundle bundle) {
             Log.d(TAG, "Connected, start sharing data.");
+            Wearable.MessageApi.addListener(apiClient, onMessageListener);
         }
 
         @Override
@@ -142,7 +148,7 @@ public class MobilePlayerActivity extends Activity {
         } catch (IOException e) {
             showMessage("Couldn't change image: " + imageUri);
         }
-       sendImageToWear(imageUri);
+        sendImageToWear(imageUri);
     }
 
     private void sendImageToWear(Uri imageUri) {
@@ -185,5 +191,21 @@ public class MobilePlayerActivity extends Activity {
 
     private void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private final MessageApi.MessageListener onMessageListener = new MessageApi.MessageListener() {
+        @Override
+        public void onMessageReceived(MessageEvent messageEvent) {
+            Log.d(TAG, "Got message: " + messageEvent);
+            if (messageEvent.getPath().equals(Message.PATH_CONTROL)) {
+                byte playing = messageEvent.getData()[0];
+                sendPlayingState(playing == Message.CONTROL_PLAY);
+            }
+        }
+    };
+
+    private void sendPlayingState(boolean playing) {
+        textView.setText("Player state: " + (playing ? "playing" : "stopped"));
+        WearUtils.broadCastMessageAsync(apiClient, Message.PATH_CONTROL, (byte) (playing ? 1 : 0));
     }
 }
