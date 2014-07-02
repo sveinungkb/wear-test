@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center|bottom"
+        android:id="@+id/player_meta"
         android:orientation="vertical">
 
         <TextView
