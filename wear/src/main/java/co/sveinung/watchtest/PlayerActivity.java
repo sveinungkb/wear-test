@@ -119,20 +119,28 @@ public class PlayerActivity extends InsetActivity {
         }
     };
 
-    public void setNowPlaying(boolean nowPlaying) {
-        if (nowPlaying) {
-            actionButton.setText("Stop");
-        }
-        else {
-            actionButton.setText("Play");
-        }
+    public void setNowPlaying(final boolean nowPlaying) {
+        actionButton.post(new Runnable() {
+            @Override
+            public void run() {
+                if (nowPlaying) {
+                    actionButton.setText("Stop");
+                }
+                else {
+                    actionButton.setText("Play");
+                }
+            }
+        });
+
         this.nowPlaying = nowPlaying;
     }
 
     private final View.OnClickListener onActionClickedListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            WearUtils.broadCastMessageAsync(apiClient, Message.PATH_CONTROL, nowPlaying ? Message.CONTROL_STOP : Message.CONTROL_PLAY);
+            byte payload = nowPlaying ? Message.CONTROL_STOP : Message.CONTROL_PLAY;
+            Log.d(TAG, "Send action: " + nowPlaying + " " + payload);
+            WearUtils.broadCastMessageAsync(apiClient, Message.PATH_CONTROL, payload);
         }
     };
 

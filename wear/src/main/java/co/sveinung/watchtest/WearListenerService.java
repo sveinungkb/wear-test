@@ -1,0 +1,31 @@
+package co.sveinung.watchtest;
+
+import android.content.Intent;
+import android.util.Log;
+
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.WearableListenerService;
+
+/**
+ * Created by sveinung on 01.07.14.
+ */
+public class WearListenerService extends WearableListenerService {
+
+    private static final String TAG = WearListenerService.class.getSimpleName();
+
+    @Override
+    public void onMessageReceived(MessageEvent messageEvent) {
+        super.onMessageReceived(messageEvent);
+        Log.d(TAG, "onMessageEvent: " + messageEvent);
+    }
+
+    @Override
+    public void onPeerConnected(Node peer) {
+        super.onPeerConnected(peer);
+        Log.d(TAG, "onPeerConnected: " + peer);
+        Intent i = new Intent(this, PlayerActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+    }
+}

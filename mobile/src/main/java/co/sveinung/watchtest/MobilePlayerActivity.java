@@ -204,8 +204,13 @@ public class MobilePlayerActivity extends Activity {
         }
     };
 
-    private void sendPlayingState(boolean playing) {
-        textView.setText("Player state: " + (playing ? "playing" : "stopped"));
-        WearUtils.broadCastMessageAsync(apiClient, Message.PATH_CONTROL, (byte) (playing ? 1 : 0));
+    private void sendPlayingState(final boolean playing) {
+        textView.post(new Runnable() {
+            @Override
+            public void run() {
+                textView.setText("Player state: " + (playing ? "playing" : "stopped"));
+            }
+        });
+        WearUtils.broadCastMessageAsync(apiClient, Message.PATH_STATE, (byte) (playing ? 1 : 0));
     }
 }
