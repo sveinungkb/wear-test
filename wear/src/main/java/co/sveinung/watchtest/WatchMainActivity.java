@@ -32,15 +32,9 @@ public class WatchMainActivity extends InsetActivity {
     @Override
     public void onReadyForContent() {
         setContentView(R.layout.activity_main);
-        final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
-        stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
-            @Override
-            public void onLayoutInflated(WatchViewStub stub) {
-                mTextView = (TextView) stub.findViewById(R.id.text);
-                Log.d(TAG, "TextView: " + mTextView.getText() + " view=" + mTextView);
-                mTextView.setText("Ready!");
-            }
-        });
+        mTextView = (TextView) findViewById(R.id.text);
+        mTextView.setText("Ready!");
+        Log.d(TAG, "TextView: " + mTextView.getText() + " view=" + mTextView);
         Log.d(TAG, "Watch ready for content!");
     }
 
