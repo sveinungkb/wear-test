@@ -27,13 +27,16 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sveinung on 01.07.14.
  */
 public class PlayerActivity extends InsetActivity {
     private static final String TAG = PlayerActivity.class.getSimpleName();
+    private static final long TIMEOUT_MS = 10000;
     private DismissOverlayView dismissOverlayView;
     private GestureDetector longTouchDetector;
     private MetaView metaView;
@@ -98,15 +101,32 @@ public class PlayerActivity extends InsetActivity {
                     DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
                     final String text = dataMapItem.getDataMap().getString(Data.KEY_META_TEXT);
                     Asset asset = dataMapItem.getDataMap().getAsset(Data.KEY_META_ASSET);
-                    Bitmap albumArt = null;
-                    if (asset != null) {
-                        albumArt = BitmapFactory.decodeStream(Wearable.DataApi.getFdForAsset(apiClient, asset).await().getInputStream());
-                    }
+                    Bitmap albumArt = loadBitmapFromAsset(asset);
                     metaView.setMeta(text, albumArt);
                 }
             }
         }
     };
+
+    public Bitmap loadBitmapFromAsset(Asset asset) {
+        if (asset == null) {
+            throw new IllegalArgumentException("Asset must be non-null");
+        }
+        ConnectionResult result =
+                apiClient.blockingConnect(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        if (!result.isSuccess()) {
+            return null;
+        }
+        // convert asset into a file descriptor and block until it's ready
+        InputStream assetInputStream = Wearable.DataApi.getFdForAsset(apiClient, asset).await().getInputStream();
+
+        if (assetInputStream == null) {
+            Log.w(TAG, "Requested an unknown Asset.");
+            return null;
+        }
+        // decode the stream into a bitmap
+        return BitmapFactory.decodeStream(assetInputStream);
+    }
 
     public MessageApi.MessageListener onMessageListener = new MessageApi.MessageListener() {
         @Override

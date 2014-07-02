@@ -22,6 +22,12 @@
         android:id="@+id/player_button"
         android:text="Change"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/player_button_launch"
+        android:text="Launch"/>
+
     <TextView
         android:text="Player state:"
         android:layout_width="wrap_content"

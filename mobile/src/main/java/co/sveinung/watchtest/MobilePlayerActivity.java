@@ -30,9 +30,11 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * Created by sveinung on 01.07.14.
@@ -62,6 +64,13 @@ public class MobilePlayerActivity extends Activity {
                         "Select Picture"), REQUEST_PICK_PICTURE);
             }
         });
+
+        findViewById(R.id.player_button_launch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchWearApp();
+            }
+        });
     }
 
     @Override
@@ -72,9 +81,7 @@ public class MobilePlayerActivity extends Activity {
 
     private void ensureConnected() {
         if (apiClient != null && apiClient.isConnected()) {
-            launchWearApp();
-        }
-        else {
+        } else {
             apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionListener).addApi(Wearable.API).build();
             apiClient.connect();
         }
@@ -145,32 +152,24 @@ public class MobilePlayerActivity extends Activity {
 
     private void sendImage(final Uri imageUri) {
         try {
-            Bitmap bitmap = getBitmapFromUri(imageUri);
+            Bitmap bitmap = getBitmapFromUri(imageUri, 320, 320);
             image.setImageBitmap(bitmap);
-
+            sendImageToWear(bitmap);
         } catch (IOException e) {
-            showMessage("Couldn't change image: " + imageUri);
+            showMessage("Couldn't send image: " + imageUri);
+            Log.d(TAG, "Failed to send image.", e);
         }
-        sendImageToWear(imageUri);
     }
 
-    private void sendImageToWear(Uri imageUri) {
-        Asset asset = null;
-        if (imageUri != null) {
-            try {
-                asset = Asset.createFromFd(getReadOnlyFileDescriptor(imageUri));
-            } catch (FileNotFoundException e) {
-                showMessage("Couldn't send uri: " + imageUri);
-            }
-        }
-        final Asset finalAsset = asset;
-        Log.d(TAG, "Changing image to: " + imageUri);
+    private void sendImageToWear(final Bitmap bitmap) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
+                Asset asset = createAssetFromBitmap(bitmap);
+                Log.d(TAG, "Changing image to: " + bitmap);
                 PutDataMapRequest dataMap = PutDataMapRequest.create(Data.PATH_META);
                 dataMap.getDataMap().putString(Data.KEY_META_TEXT, "Rihanna Radio");
-                dataMap.getDataMap().putAsset(Data.KEY_META_ASSET, finalAsset);
+                dataMap.getDataMap().putAsset(Data.KEY_META_ASSET, asset);
                 PutDataRequest request = dataMap.asPutDataRequest();
                 DataApi.DataItemResult result = Wearable.DataApi
                         .putDataItem(apiClient, request).await();
@@ -180,11 +179,29 @@ public class MobilePlayerActivity extends Activity {
         }.execute();
     }
 
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+    private static Asset createAssetFromBitmap(Bitmap bitmap) {
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        int originalSize = bitmap.getByteCount();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
+        return Asset.createFromBytes(byteStream.toByteArray());
+    }
+
+    private byte[] bitmapToBytes(Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+        ByteBuffer byteBuffer = ByteBuffer.allocate(bitmap.getByteCount());
+        bitmap.copyPixelsToBuffer(byteBuffer);
+        return byteBuffer.array();
+    }
+
+    private Bitmap getBitmapFromUri(final Uri uri, final int width, final int height) throws IOException {
         ParcelFileDescriptor parcelFileDescriptor = getReadOnlyFileDescriptor(uri);
         Bitmap image = BitmapFactory.decodeFileDescriptor(parcelFileDescriptor.getFileDescriptor());
+        Bitmap scaled = Bitmap.createScaledBitmap(image, width, height, false);
+        image.recycle();
         parcelFileDescriptor.close();
-        return image;
+        return scaled;
     }
 
     private ParcelFileDescriptor getReadOnlyFileDescriptor(final Uri uri) throws FileNotFoundException {
@@ -218,6 +235,11 @@ public class MobilePlayerActivity extends Activity {
     }
 
     private void launchWearApp() {
-        WearUtils.broadCastMessageAsync(apiClient, Message.PATH_LAUNCH, (byte)0);
+        if (apiClient != null && apiClient.isConnected()) {
+            WearUtils.broadCastMessageAsync(apiClient, Message.PATH_LAUNCH, (byte) 0);
+        }
+        else {
+             ensureConnected();
+        }
     }
 }
