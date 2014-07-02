@@ -15,6 +15,7 @@
         android:id="@+id/player_image"
         android:src="@drawable/rihanna_loud_album_cover"
         />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

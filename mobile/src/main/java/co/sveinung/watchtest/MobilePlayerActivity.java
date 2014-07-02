@@ -72,7 +72,9 @@ public class MobilePlayerActivity extends Activity {
 
     private void ensureConnected() {
         if (apiClient != null && apiClient.isConnected()) {
-        } else {
+            launchWearApp();
+        }
+        else {
             apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionListener).addApi(Wearable.API).build();
             apiClient.connect();
         }
@@ -108,6 +110,7 @@ public class MobilePlayerActivity extends Activity {
         public void onConnected(Bundle bundle) {
             Log.d(TAG, "Connected, start sharing data.");
             Wearable.MessageApi.addListener(apiClient, onMessageListener);
+            launchWearApp();
         }
 
         @Override
@@ -212,5 +215,9 @@ public class MobilePlayerActivity extends Activity {
             }
         });
         WearUtils.broadCastMessageAsync(apiClient, Message.PATH_STATE, (byte) (playing ? 1 : 0));
+    }
+
+    private void launchWearApp() {
+        WearUtils.broadCastMessageAsync(apiClient, Message.PATH_LAUNCH, (byte)0);
     }
 }

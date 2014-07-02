@@ -1,0 +1,18 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.Light">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="LightButton" parent="android:Widget.DeviceDefault.Light.Button">
+        <item name="android:textColor">#fff</item>
+    </style>
+
+    <style name="LightText">
+        <item name="android:textColor">#fff</item>
+        <item name="android:shadowColor">#000</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+</resources>

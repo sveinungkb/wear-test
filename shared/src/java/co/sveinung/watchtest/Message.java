@@ -9,4 +9,5 @@ public class Message {
     public static final byte CONTROL_STOP = 0;
     public static final byte CONTROL_PLAY = 1;
     public static final byte STATE_PLAYING = 1;
+    public static final String PATH_LAUNCH = "/launch";
 }

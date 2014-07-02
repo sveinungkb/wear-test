@@ -21,6 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/player_meta_text"
+            style="@style/LightText"
             android:text="Rihanna - Diamonds" />
 
         <Button
@@ -28,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            style="@style/LightButton"
             android:text="Play" />
     </LinearLayout>
 
