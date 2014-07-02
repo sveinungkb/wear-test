@@ -28,4 +28,9 @@
             android:gravity="center_horizontal"
             android:text="Play" />
     </LinearLayout>
+
+    <android.support.wearable.view.DismissOverlayView
+        android:layout_width="match_parent"
+        android:id="@+id/player_dismiss_overlay"
+        android:layout_height="match_parent"/>
 </FrameLayout>
