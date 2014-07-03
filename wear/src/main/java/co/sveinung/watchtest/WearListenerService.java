@@ -31,11 +31,12 @@ public class WearListenerService extends WearableListenerService {
     @Override
     public void onPeerConnected(Node peer) {
         super.onPeerConnected(peer);
+        startApp();
         Log.d(TAG, "onPeerConnected: " + peer);
     }
 
     private void startApp() {
-        Intent i = new Intent(this, PlayerActivity.class);
+        Intent i = new Intent(this, WatchMainActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
