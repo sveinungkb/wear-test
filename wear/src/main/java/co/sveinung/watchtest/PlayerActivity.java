@@ -1,10 +1,16 @@
 package co.sveinung.watchtest;
 
+import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.activity.InsetActivity;
 import android.support.wearable.view.DismissOverlayView;
 import android.util.Log;
@@ -12,6 +18,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by sveinung on 01.07.14.
  */
-public class PlayerActivity extends InsetActivity {
+public class PlayerActivity extends Activity {
     private static final String TAG = PlayerActivity.class.getSimpleName();
     private static final long TIMEOUT_MS = 10000;
     private DismissOverlayView dismissOverlayView;
@@ -46,8 +53,11 @@ public class PlayerActivity extends InsetActivity {
     private Handler handler = new Handler();
 
     @Override
-    public void onReadyForContent() {
+    protected void onCreate(Bundle state) {
+        super.onCreate(state);
+        Toast.makeText(this, "Created!", Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_player);
+
         dismissOverlayView = (DismissOverlayView) findViewById(R.id.player_dismiss_overlay);
         dismissOverlayView.setIntroText("Long press to dismiss!");
         dismissOverlayView.showIntroIfNecessary();
@@ -63,6 +73,12 @@ public class PlayerActivity extends InsetActivity {
 
         apiClient = new GoogleApiClient.Builder(this, onConnectedListener, onConnectionFailedListener).addApi(Wearable.API).build();
         apiClient.connect();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Toast.makeText(this, "New intent", Toast.LENGTH_LONG).show();
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -163,6 +179,8 @@ public class PlayerActivity extends InsetActivity {
             WearUtils.broadCastMessageAsync(apiClient, Message.PATH_CONTROL, payload);
         }
     };
+
+
 
 
 

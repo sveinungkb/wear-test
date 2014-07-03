@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.sveinung.watchtest" >
+    package="co.sveinung.watchtest">
 
     <uses-feature android:name="android.hardware.type.watch" />
 
@@ -8,34 +8,47 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:hardwareAccelerated="true"
+        android:theme="@android:style/Theme.DeviceDefault.Light">
         <activity
             android:name=".WatchMainActivity"
             android:allowEmbedded="true"
             android:exported="true"
-            android:taskAffinity=""
-            android:label="@string/app_name" >
-        </activity>
-        <activity android:name=".PlayerActivity">
-            android:allowEmbedded="true"
-            android:exported="true"
-            android:taskAffinity=""
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".WearListenerService"
+        <activity android:name=".PlayerActivity"
+            android:allowEmbedded="true"
+            android:exported="true"
+            android:taskAffinity=""
+            android:label="@string/app_name"
+
+            ></activity>
+
+        <service
+            android:name=".WearListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
                 <action android:name="com.google.android.gms.wearable." />
             </intent-filter>
-            </service>
+        </service>
 
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        <receiver
+            android:name=".ActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="co.sveinung.watchtest.LAUNCH" />
+            </intent-filter>
+        </receiver>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
